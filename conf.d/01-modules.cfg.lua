@@ -44,6 +44,11 @@ modules_enabled = {
     --"legacyauth"; -- Legacy authentication. Only used by some old clients and bots.
     "lastactivity";
     "server_contact_info"; -- This module lets you advertise various contact addresses for your XMPP service via XEP-0157.
+
+    -- Cloudron Modules
+    "auth_ldap";
+    "host_status_check";
+    "http_host_status_check";
 };
 
 -- These modules are auto-loaded, but should you want

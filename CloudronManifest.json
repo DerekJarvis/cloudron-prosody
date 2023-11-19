@@ -1,0 +1,59 @@
+{
+  "id": "com.prosody.xmpp",
+  "title": "Prosody (XMPP)",
+  "author": "Prosody",
+  "description": "file://DESCRIPTION.md",
+  "tagline": "Self-hosted Chat using XMPP",
+  "postInstallMessage": "Some instructions on how to access...",
+  "version": "0.0.1",
+  "healthCheckPath": "/",
+  "httpPort": 5280,
+  "tcpPorts": {
+    "FILE_XFER_PORT": {
+      "title": "FILE_XFER_PORT",
+      "description": "proxy65 port used for file sharing",
+      "defaultValue": 5000,
+      "containerPort": 5000
+    },
+    "C2S_PORT": {
+      "title": "C2S_PORT",
+      "description": "c2s port (client to server)",
+      "defaultValue": 5222,
+      "containerPort": 5222
+    },
+    "C2S_PORT_LEGACY": {
+      "title": "C2S_PORT_LEGACY",
+      "description": "c2s legacy ssl port (client to server)",
+      "defaultValue": 5223,
+      "containerPort": 5223
+    },
+    "S2S_PORT": {
+      "title": "S2S_PORT",
+      "description": "s2s port (server to server)",
+      "defaultValue": 5269,
+      "containerPort": 5269
+    },
+    "BOSH_PORT": {
+      "title": "BOSH_PORT",
+      "description": "BOSH / websocket port",
+      "defaultValue": 5280,
+      "containerPort": 5280
+    },
+    "BOSH_PORT_SECURE": {
+      "title": "BOSH_PORT_SECURE",
+      "description": "Secure BOSH / websocket port",
+      "defaultValue": 5281,
+      "containerPort": 5281
+    }
+  },
+  "addons": {
+    "localstorage": {},
+    "tls": {}
+  },
+  "manifestVersion": 2,
+  "website": "https://prosody.im/",
+  "contactEmail": "support@clourdon.io",
+  "icon": "file://icon.png",
+  "tags": [ "test", "chat" ],
+  "mediaLinks": [ "https://prosody.im/prosody.svg" ]
+}
