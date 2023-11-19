@@ -8,7 +8,12 @@ admins = stringy.split(prosody_admins, ", ");
 
 pidfile = "/var/run/prosody/prosody.pid"
 
-allow_registration = os.getenv("ALLOW_REGISTRATION") or "true";
+use_libevent = true; -- improves performance
+
+-- Set data directory to path provided by Cloudron storage addon
+data_path = /app/data/data
+
+allow_registration = os.getenv("ALLOW_REGISTRATION");
 
 c2s_require_encryption = os.getenv("C2S_REQUIRE_ENCRYPTION") or "true";
 s2s_require_encryption = os.getenv("S2S_REQUIRE_ENCRYPTION") or "true";

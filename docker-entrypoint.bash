@@ -31,32 +31,9 @@ export SERVER_CONTACT_INFO_SECURITY=${SERVER_CONTACT_INFO_SECURITY:-"xmpp:securi
 export SERVER_CONTACT_INFO_SUPPORT=${SERVER_CONTACT_INFO_SUPPORT:-"xmpp:support@$DOMAIN"}
 export PROSODY_ADMINS=${PROSODY_ADMINS:-""}
 
-# Cloudron Cert copying
-# Cloudron will restart the container when the cert changes
-# Which will cause these to be updated
-mkdir -p /usr/local/etc/prosody/certs/$DOMAIN_HTTP_UPLOAD
-cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN_HTTP_UPLOAD/fullchain.pem
-cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN_HTTP_UPLOAD/privkey.pem
+cp /cloudron-perms.bash /app/data/cloudron-perms.bash
 
-mkdir -p /usr/local/etc/prosody/certs/$DOMAIN_MUC
-cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN_MUC/fullchain.pem
-cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN_MUC/privkey.pem
-
-mkdir -p /usr/local/etc/prosody/certs/$DOMAIN_PROXY
-cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN_PROXY/fullchain.pem
-cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN_PROXY/privkey.pem
-
-mkdir -p /usr/local/etc/prosody/certs/$DOMAIN
-cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN/fullchain.pem
-cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN/privkey.pem
-
-
-# Update ownership of data directory
-# prosody is hard-coded to use 999
-chown -R 999:999 /app/data
-
-# Link the directory to where prosody expects it
-ln -s /app/data /usr/local/var/lib/prosody
+su cloudron --command "/app/data/cloudron-perms.bash"
 
 if [[ "$1" != "prosody" ]]; then
     exec prosodyctl $*
