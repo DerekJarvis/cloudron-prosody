@@ -1,7 +1,15 @@
 #!/bin/bash
 set -e
 
-export ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-true}
+# Cloudron dfeaults & Env Mappings
+export ALLOW_REGISTRATION=FALSE
+export DOMAIN=${CLOUDRON_APP_DOMAIN}
+export AUTHENTICATION="ldap"
+export LDAP_BASE=${CLOUDRON_LDAP_USERS_BASE_DN}
+export LDAP_SERVER=${CLOUDRON_LDAP_SERVER}
+export LDAP_FILTER="(&(objectclass=user)(|(username=%uid)(mail=%uid)))" # Recommended filter
+export LDAP_ADMIN_FILTER="(&(objectclass=user)(memberof=CN=admin,ou=groups,dc=cloudron)(|(username=%uid)(mail=%uid)))" # Guess at how to identify admins
+
 export DOMAIN_HTTP_UPLOAD=${DOMAIN_HTTP_UPLOAD:-"upload.$DOMAIN"}
 export DOMAIN_MUC=${DOMAIN_MUC:-"conference.$DOMAIN"}
 export DOMAIN_PROXY=${DOMAIN_PROXY:-"proxy.$DOMAIN"}
@@ -22,6 +30,33 @@ export SERVER_CONTACT_INFO_SALES=${SERVER_CONTACT_INFO_SALES:-"xmpp:sales@$DOMAI
 export SERVER_CONTACT_INFO_SECURITY=${SERVER_CONTACT_INFO_SECURITY:-"xmpp:security@$DOMAIN"}
 export SERVER_CONTACT_INFO_SUPPORT=${SERVER_CONTACT_INFO_SUPPORT:-"xmpp:support@$DOMAIN"}
 export PROSODY_ADMINS=${PROSODY_ADMINS:-""}
+
+# Cloudron Cert copying
+# Cloudron will restart the container when the cert changes
+# Which will cause these to be updated
+mkdir -p /usr/local/etc/prosody/certs/$DOMAIN_HTTP_UPLOAD
+cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN_HTTP_UPLOAD/fullchain.pem
+cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN_HTTP_UPLOAD/privkey.pem
+
+mkdir -p /usr/local/etc/prosody/certs/$DOMAIN_MUC
+cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN_MUC/fullchain.pem
+cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN_MUC/privkey.pem
+
+mkdir -p /usr/local/etc/prosody/certs/$DOMAIN_PROXY
+cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN_PROXY/fullchain.pem
+cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN_PROXY/privkey.pem
+
+mkdir -p /usr/local/etc/prosody/certs/$DOMAIN
+cp /etc/certs/tls_cert.pem /usr/local/etc/prosody/certs/$DOMAIN/fullchain.pem
+cp /etc/certs/tls_key.pem /usr/local/etc/prosody/certs/$DOMAIN/privkey.pem
+
+
+# Update ownership of data directory
+# prosody is hard-coded to use 999
+chown -R 999:999 /app/data
+
+# Link the directory to where prosody expects it
+ln -s /app/data /usr/local/var/lib/prosody
 
 if [[ "$1" != "prosody" ]]; then
     exec prosodyctl $*

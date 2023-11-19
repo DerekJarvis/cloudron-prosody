@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM cloudron/base:4.2.0@sha256:46da2fffb36353ef714f97ae8e962bd2c212ca091108d768ba473078319a47f4
 
 ARG BUILD_DATE
 ARG VCS_REF
@@ -26,7 +26,7 @@ LABEL prosody.version="${PROSODY_VERSION}"
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
       libevent-dev `# this is no build dependency, but needed for luaevent` \
-      libicu72 \
+      libicu70 \
       libidn2-0 \
       libpq-dev \
       libsqlite3-0 \
@@ -108,10 +108,12 @@ RUN download-prosody-modules.bash \
         smacks `# stream management (XEP-0198)` \
         throttle_presence `# presence throttling in CSI` \
         vcard_muc `# XEP-0153: vCard-Based Avatar (MUC)` \
+        auth_ldap `#Cloudron: LDAP Auth` \
+        host_status_check `#Cloudron: Health checker` \
+        http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
  && rm -rf "/usr/src/prosody-modules"
 
 USER prosody
 
 ENTRYPOINT ["/entrypoint.bash"]
 CMD ["prosody", "-F"]
-
