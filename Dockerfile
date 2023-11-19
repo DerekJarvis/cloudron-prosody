@@ -79,12 +79,10 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
 
 EXPOSE 5000 5222 5223 5269 5347 5280 5281
 
-RUN groupadd -r prosody \
- && useradd -r -g prosody prosody \
- && chown prosody:prosody /usr/local/var/lib/prosody
+RUN chown cloudron:cloudron /usr/local/var/lib/prosody
 
 RUN mkdir -p /var/run/prosody/ \
- && chown prosody:prosody /var/run/prosody/
+ && chown cloudron:cloudron /var/run/prosody/
 
 # https://github.com/prosody/prosody-docker/issues/25
 ENV __FLUSH_LOG yes
@@ -92,7 +90,6 @@ ENV __FLUSH_LOG yes
 VOLUME ["/usr/local/var/lib/prosody"]
 
 COPY prosody.cfg.lua /usr/local/etc/prosody/prosody.cfg.lua
-COPY cloudron-perms.bash /cloudron-perms.bash
 COPY docker-entrypoint.bash /entrypoint.bash
 COPY conf.d/*.cfg.lua /usr/local/etc/prosody/conf.d/
 
@@ -114,7 +111,7 @@ RUN download-prosody-modules.bash \
         http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
  && rm -rf "/usr/src/prosody-modules"
 
-USER prosody
+USER cloudron
 
 ENTRYPOINT ["/entrypoint.bash"]
 CMD ["prosody", "-F"]
