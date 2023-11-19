@@ -9,6 +9,9 @@ pidfile = "/var/run/prosody/prosody.pid"
 
 use_libevent = true; -- improves performance
 
+-- Set data directory to path provided by Cloudron storage addon
+data_path = /app/data/data
+
 allow_registration = os.getenv("ALLOW_REGISTRATION");
 
 c2s_require_encryption = os.getenv("C2S_REQUIRE_ENCRYPTION");

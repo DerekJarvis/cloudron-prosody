@@ -92,6 +92,7 @@ ENV __FLUSH_LOG yes
 VOLUME ["/usr/local/var/lib/prosody"]
 
 COPY prosody.cfg.lua /usr/local/etc/prosody/prosody.cfg.lua
+COPY cloudron-perms.bash /cloudron-perms.bash
 COPY docker-entrypoint.bash /entrypoint.bash
 COPY conf.d/*.cfg.lua /usr/local/etc/prosody/conf.d/
 
