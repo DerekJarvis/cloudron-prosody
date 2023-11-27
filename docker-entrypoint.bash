@@ -3,6 +3,8 @@ set -e
 
 # Cloudron dfeaults & Env Mappings
 export ALLOW_REGISTRATION=FALSE
+# uncomment for debugging
+#export DOMAIN=xmpp.alkalight.llc
 export DOMAIN=${CLOUDRON_APP_DOMAIN}
 export AUTHENTICATION="ldap"
 export LDAP_BASE=${CLOUDRON_LDAP_USERS_BASE_DN}
@@ -31,8 +33,6 @@ export SERVER_CONTACT_INFO_SECURITY=${SERVER_CONTACT_INFO_SECURITY:-"xmpp:securi
 export SERVER_CONTACT_INFO_SUPPORT=${SERVER_CONTACT_INFO_SUPPORT:-"xmpp:support@$DOMAIN"}
 export PROSODY_ADMINS=${PROSODY_ADMINS:-""}
 
-# First assert Cloudron ownership
-#chown -R cloudron:cloudron /app/data
 #errors with: 
 #chown: changing ownership of '/app/data': Operation not permitted
 
@@ -58,18 +58,14 @@ mkdir -p /app/data/certs/$DOMAIN
 cp /etc/certs/tls_cert.pem /app/data/certs/$DOMAIN/fullchain.pem
 cp /etc/certs/tls_key.pem /app/data/certs/$DOMAIN/privkey.pem
 
-if [[ "$1" != "prosody" ]]; then
-    exec prosodyctl $*
-    exit 0;
-fi
-
-if [ "$LOCAL" -a "$PASSWORD" -a "$DOMAIN" ] ; then
-    prosodyctl register $LOCAL $DOMAIN $PASSWORD
-fi
-
 if [ -z "$DOMAIN" ]; then
   echo "[ERROR] DOMAIN must be set!"
   exit 1
 fi
 
-exec "$@"
+# Assert ownership
+chown -R prosody:prosody /app/data
+
+# exec ls -lah /app/data
+# exec /usr/local/bin/gosu prosody:prosody ls -lahR /usr/local/var/lib/prosody
+exec /usr/local/bin/gosu prosody:prosody /app/data/prosody -F --config /app/data/prosody.cfg.lua
