@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-source="/usr/src/prosody-modules"
-target="/usr/local/lib/prosody/custom-modules"
-config="/usr/local/etc/prosody/conf.d/01-modules.cfg.lua"
+source="/app/data/prosody-modules"
+target="/app/data/custom-modules"
+config="/app/data/conf.d/01-modules.cfg.lua"
 
 cd ${source}
 

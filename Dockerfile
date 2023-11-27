@@ -58,6 +58,8 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
  && make \
  && make install \
  && cd / && rm -r /usr/src/prosody \
+ && mkdir -p /app/data \
+ && mv /usr/local/bin/prosody* /app/data \
  \
  && mkdir /usr/src/luarocks \
  && cd /usr/src/luarocks \
@@ -79,24 +81,20 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
 
 EXPOSE 5000 5222 5223 5269 5347 5280 5281
 
-RUN chown cloudron:cloudron /usr/local/var/lib/prosody
-
-RUN mkdir -p /var/run/prosody/ \
- && chown cloudron:cloudron /var/run/prosody/
-
 # https://github.com/prosody/prosody-docker/issues/25
 ENV __FLUSH_LOG yes
 
-VOLUME ["/usr/local/var/lib/prosody"]
-
-COPY prosody.cfg.lua /usr/local/etc/prosody/prosody.cfg.lua
+COPY prosody.cfg.lua /app/data/prosody.cfg.lua
 COPY docker-entrypoint.bash /entrypoint.bash
-COPY conf.d/*.cfg.lua /usr/local/etc/prosody/conf.d/
+COPY conf.d/*.cfg.lua /app/data/conf.d/
 
-COPY *.bash /usr/local/bin/
+COPY *.bash /app/data/bin/
 
-RUN download-prosody-modules.bash \
- && docker-prosody-module-install.bash \
+# Local modules for debugging
+# COPY tip.tar.gz /tip.tar.gz
+
+RUN /app/data/bin/download-prosody-modules.bash \
+ && /app/data/bin/docker-prosody-module-install.bash \
         bookmarks `# XEP-0411: Bookmarks Conversion` \
         carbons `# message carbons (XEP-0280)` \
         cloud_notify `# XEP-0357: Push Notifications` \
@@ -109,9 +107,17 @@ RUN download-prosody-modules.bash \
         auth_ldap `#Cloudron: LDAP Auth` \
         host_status_check `#Cloudron: Health checker` \
         http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
- && rm -rf "/usr/src/prosody-modules"
+ && rm -rf "/app/data/prosody-modules"
 
-USER cloudron
+# RUN mkdir -p /etc/certs
+
+# Workaround for hard-coded prosody user and Cloudron user perms
+# Make the prosody usre the same UID as Cloudron
+RUN sudo adduser --disabled-login prosody -gecos 'prosody' && passwd -d prosody
+
+RUN mkdir /app/data/data
+
+RUN chown -R prosody:prosody /app/data
 
 ENTRYPOINT ["/entrypoint.bash"]
-CMD ["prosody", "-F"]
+# CMD ["prosody", "-F"]
