@@ -33,12 +33,40 @@ export SERVER_CONTACT_INFO_SECURITY=${SERVER_CONTACT_INFO_SECURITY:-"xmpp:securi
 export SERVER_CONTACT_INFO_SUPPORT=${SERVER_CONTACT_INFO_SUPPORT:-"xmpp:support@$DOMAIN"}
 export PROSODY_ADMINS=${PROSODY_ADMINS:-""}
 
-#errors with: 
-#chown: changing ownership of '/app/data': Operation not permitted
+# Copy all files from startup to permanent data
+cp -r /usr/local/startup/. /app/data
+
+mkdir -p /app/data/custom-modules
+
+# Ejabberd module config
+/app/data/scripts/download-prosody-modules.bash && \
+/app/data/scripts/docker-prosody-module-install.bash \
+        bookmarks `# XEP-0411: Bookmarks Conversion` \
+        carbons `# message carbons (XEP-0280)` \
+        cloud_notify `# XEP-0357: Push Notifications` \
+        csi `# client state indication (XEP-0352)` \
+        e2e_policy `# require end-2-end encryption` \
+        filter_chatstates `# disable "X is typing" type messages` \
+        smacks `# stream management (XEP-0198)` \
+        throttle_presence `# presence throttling in CSI` \
+        vcard_muc `# XEP-0153: vCard-Based Avatar (MUC)` \
+        auth_ldap `#Cloudron: LDAP Auth` \
+        host_status_check `#Cloudron: Health checker` \
+        http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
+ && rm -rf "/app/data/prosody-modules"
 
 # Cloudron Cert copying
 # Cloudron will restart the container when the cert changes
-# Which will cause these to be updated
+# Which w# cp /usr/local/bin/prosody* /app/data/ill cause these to be updated
+
+# cp /usr/local/bin/prosody* /app/data/
+
+mkdir -p /app/data/data
+
+# Prosody run directory
+# mkdir -p /app/data/run
+# Prosody lib directory
+# mkdir -p /app/data/lib
 
 # These commands still error with:
 #mkdir: cannot create directory '/app/data/certs': Permission denied
@@ -68,4 +96,5 @@ chown -R prosody:prosody /app/data
 
 # exec ls -lah /app/data
 # exec /usr/local/bin/gosu prosody:prosody ls -lahR /usr/local/var/lib/prosody
-exec /usr/local/bin/gosu prosody:prosody /app/data/prosody -F --config /app/data/prosody.cfg.lua
+exec /usr/local/bin/gosu prosody:prosody /app/data/bin/prosody -F
+# --config /app/data/prosody.cfg.lua
