@@ -46,6 +46,7 @@ modules_enabled = {
     "server_contact_info"; -- This module lets you advertise various contact addresses for your XMPP service via XEP-0157.
 
     -- Cloudron Modules
+    "http"; -- Should be loaded automatically, but let's load it explicitly
     "auth_ldap";
     "host_status_check";
     "http_host_status_check";

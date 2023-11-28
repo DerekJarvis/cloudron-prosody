@@ -5,12 +5,13 @@ local stringy = require "stringy"
 
 admins = stringy.split(os.getenv("PROSODY_ADMINS"), ", ");
 
-pidfile = "/var/run/prosody/prosody.pid"
+pidfile = "/app/data/prosody.pid"
 
 use_libevent = true; -- improves performance
 
 -- Set data directory to path provided by Cloudron storage addon
-data_path = "/app/data/data"
+-- not needed, compiling with this set
+-- data_path = "/app/data/data"
 
 allow_registration = os.getenv("ALLOW_REGISTRATION");
 

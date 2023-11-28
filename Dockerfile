@@ -54,12 +54,10 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
  && mkdir -p /usr/src/prosody \
  && tar -xzf prosody.tar.gz -C /usr/src/prosody --strip-components=1 \
  && rm prosody.tar.gz \
- && cd /usr/src/prosody && ./configure \
+ && cd /usr/src/prosody && ./configure --prefix=/app/data --sysconfdir=/app/data --datadir=/app/data/data --no-example-certs \
  && make \
  && make install \
  && cd / && rm -r /usr/src/prosody \
- && mkdir -p /app/data \
- && mv /usr/local/bin/prosody* /app/data \
  \
  && mkdir /usr/src/luarocks \
  && cd /usr/src/luarocks \
@@ -84,40 +82,22 @@ EXPOSE 5000 5222 5223 5269 5347 5280 5281
 # https://github.com/prosody/prosody-docker/issues/25
 ENV __FLUSH_LOG yes
 
-COPY prosody.cfg.lua /app/data/prosody.cfg.lua
 COPY docker-entrypoint.bash /entrypoint.bash
-COPY conf.d/*.cfg.lua /app/data/conf.d/
 
-COPY *.bash /app/data/bin/
+RUN mkdir -p /usr/local/startup/scripts
+RUN mkdir -p /usr/local/startup/conf.d
+COPY *.bash /usr/local/startup/scripts/
+COPY prosody.cfg.lua /usr/local/startup/prosody.cfg.lua
+COPY conf.d/*.cfg.lua /usr/local/startup/conf.d/
+# Prosody automatically builds into the default directory
+# which will get overwritten by cloudron, so move it
+RUN mv /app/data/* /usr/local/startup/
 
-# Local modules for debugging
-# COPY tip.tar.gz /tip.tar.gz
-
-RUN /app/data/bin/download-prosody-modules.bash \
- && /app/data/bin/docker-prosody-module-install.bash \
-        bookmarks `# XEP-0411: Bookmarks Conversion` \
-        carbons `# message carbons (XEP-0280)` \
-        cloud_notify `# XEP-0357: Push Notifications` \
-        csi `# client state indication (XEP-0352)` \
-        e2e_policy `# require end-2-end encryption` \
-        filter_chatstates `# disable "X is typing" type messages` \
-        smacks `# stream management (XEP-0198)` \
-        throttle_presence `# presence throttling in CSI` \
-        vcard_muc `# XEP-0153: vCard-Based Avatar (MUC)` \
-        auth_ldap `#Cloudron: LDAP Auth` \
-        host_status_check `#Cloudron: Health checker` \
-        http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
- && rm -rf "/app/data/prosody-modules"
-
-# RUN mkdir -p /etc/certs
+RUN wget https://hg.prosody.im/prosody-modules/archive/tip.tar.gz && mv tip.tar.gz /usr/local/startup/tip.tar.gz
 
 # Workaround for hard-coded prosody user and Cloudron user perms
 # Make the prosody usre the same UID as Cloudron
 RUN sudo adduser --disabled-login prosody -gecos 'prosody' && passwd -d prosody
-
-RUN mkdir /app/data/data
-
-RUN chown -R prosody:prosody /app/data
 
 ENTRYPOINT ["/entrypoint.bash"]
 # CMD ["prosody", "-F"]
