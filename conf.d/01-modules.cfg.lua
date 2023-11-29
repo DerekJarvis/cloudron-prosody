@@ -1,4 +1,4 @@
-plugin_paths = { "/usr/local/lib/prosody/custom-modules/" };
+plugin_paths = { "/app/data/custom-modules/" };
 
 modules_enabled = {
     -- Generally required
@@ -47,7 +47,6 @@ modules_enabled = {
 
     -- Cloudron Modules
     "http"; -- Should be loaded automatically, but let's load it explicitly
-    "auth_ldap";
     "host_status_check";
     "http_host_status_check";
 };
