@@ -54,7 +54,7 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
  && mkdir -p /usr/src/prosody \
  && tar -xzf prosody.tar.gz -C /usr/src/prosody --strip-components=1 \
  && rm prosody.tar.gz \
- && cd /usr/src/prosody && ./configure --prefix=/app/data --sysconfdir=/app/data --datadir=/app/data/data --no-example-certs \
+ && cd /usr/src/prosody && ./configure --prefix=/app/data --datadir=/app/data/data --no-example-certs \
  && make \
  && make install \
  && cd / && rm -r /usr/src/prosody \
