@@ -8,8 +8,6 @@ admins = stringy.split(prosody_admins, ", ");
 
 pidfile = "/app/data/prosody.pid"
 
-use_libevent = true; -- improves performance
-
 -- Set data directory to path provided by Cloudron storage addon
 -- not needed, compiling with this set
 -- data_path = "/app/data/data"

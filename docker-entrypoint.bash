@@ -10,19 +10,14 @@ mkdir -p /app/data/custom-modules
 # Ejabberd module config
 /app/data/scripts/download-prosody-modules.bash && \
 /app/data/scripts/docker-prosody-module-install.bash \
-        bookmarks `# XEP-0411: Bookmarks Conversion` \
-        carbons `# message carbons (XEP-0280)` \
         cloud_notify `# XEP-0357: Push Notifications` \
-        csi `# client state indication (XEP-0352)` \
         e2e_policy `# require end-2-end encryption` \
         filter_chatstates `# disable "X is typing" type messages` \
-        smacks `# stream management (XEP-0198)` \
         throttle_presence `# presence throttling in CSI` \
         vcard_muc `# XEP-0153: vCard-Based Avatar (MUC)` \
         host_status_check `#Cloudron: Health checker` \
         http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
         turn_external `#Cloudron: STUN/TURN Connectivity` \
-        smacks `#Cloudron: For XEP-0198: Stream Management` \
         cloud_notify `#Cloudron: For XEP-0357: Push Notifications` \
  && rm -rf "/app/data/prosody-modules"
 
