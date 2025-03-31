@@ -84,19 +84,22 @@ ENV __FLUSH_LOG=yes
 
 COPY docker-entrypoint.bash /entrypoint.bash
 
+RUN wget https://hg.prosody.im/prosody-modules/archive/tip.tar.gz
+
 RUN mkdir -p /usr/local/startup/scripts
 RUN mkdir -p /usr/local/startup/conf.d
 COPY *.bash /usr/local/startup/scripts/
 COPY prosody.cfg.lua /usr/local/startup/prosody.cfg.lua
 COPY conf.d/*.cfg.lua /usr/local/startup/conf.d/
+
 # Prosody automatically builds into the default directory
 # which will get overwritten by cloudron, so move it
 RUN mv /app/data/* /usr/local/startup/
 
-RUN wget https://hg.prosody.im/prosody-modules/archive/tip.tar.gz && mv tip.tar.gz /usr/local/startup/tip.tar.gz
+RUN mv tip.tar.gz /usr/local/startup/tip.tar.gz
 
 # Workaround for hard-coded prosody user and Cloudron user perms
-# Make the prosody usre the same UID as Cloudron
+# Make the prosody user the same UID as Cloudron
 RUN sudo adduser --disabled-login prosody -gecos 'prosody' && passwd -d prosody
 
 ENTRYPOINT ["/entrypoint.bash"]

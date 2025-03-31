@@ -16,9 +16,13 @@ use_libevent = true; -- improves performance
 
 allow_registration = os.getenv("ALLOW_REGISTRATION");
 
-c2s_require_encryption = os.getenv("C2S_REQUIRE_ENCRYPTION") or "true";
-s2s_require_encryption = os.getenv("S2S_REQUIRE_ENCRYPTION") or "true";
-s2s_secure_auth = os.getenv("S2S_SECURE_AUTH") or "true";
+-- Make sure we're listening on external interfaces
+http_interfaces = { "0.0.0.0", "::1" }
+https_interfaces = { "0.0.0.0", "::1" }
+
+c2s_require_encryption = os.getenv("C2S_REQUIRE_ENCRYPTION");
+s2s_require_encryption = os.getenv("S2S_REQUIRE_ENCRYPTION");
+s2s_secure_auth = os.getenv("S2S_SECURE_AUTH");
 
 authentication = os.getenv("AUTHENTICATION") or "internal_hashed";
 
@@ -31,6 +35,9 @@ ldap_scope = os.getenv("LDAP_SCOPE") or "subtree";
 ldap_tls = os.getenv("LDAP_TLS") or "false";
 ldap_mode = os.getenv("LDAP_MODE") or "bind";
 ldap_admin_filter = os.getenv("LDAP_ADMIN_FILTER") or "";
+
+turn_external_host = os.getenv("TURN_SERVER")
+turn_external_secret = os.getenv("TURN_SECRET")
 
 log = {
     {levels = {min = os.getenv("LOG_LEVEL") or "info"}, to = "console"};

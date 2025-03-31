@@ -4,9 +4,9 @@
   "author": "Prosody",
   "description": "file://DESCRIPTION.md",
   "tagline": "Self-hosted Chat using XMPP",
-  "postInstallMessage": "Some instructions on how to access...",
+  "postInstallMessage": "All users can access with their e-mail and password. To troubleshoot run the check and shell scripts in /app/data/scripts directory.",
   "version": "0.0.1",
-  "healthCheckPath": "/",
+  "healthCheckPath": "/host_status_check",
   "httpPort": 5280,
   "tcpPorts": {
     "FILE_XFER_PORT": {
@@ -48,11 +48,14 @@
   },
   "addons": {
     "localstorage": {},
-    "tls": {}
+    "tls": {},
+    "ldap": {},
+    "turn": {}
   },
+  "multiDomain": true,
   "manifestVersion": 2,
   "website": "https://prosody.im/",
-  "contactEmail": "support@clourdon.io",
+  "contactEmail": "support@cloudron.io",
   "icon": "file://icon.png",
   "tags": [ "test", "chat" ],
   "mediaLinks": [ "https://prosody.im/prosody.svg" ]

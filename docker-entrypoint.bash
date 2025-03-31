@@ -21,13 +21,18 @@ mkdir -p /app/data/custom-modules
         vcard_muc `# XEP-0153: vCard-Based Avatar (MUC)` \
         host_status_check `#Cloudron: Health checker` \
         http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
+        turn_external `#Cloudron: STUN/TURN Connectivity` \
+        smacks `#Cloudron: For XEP-0198: Stream Management` \
+        cloud_notify `#Cloudron: For XEP-0357: Push Notifications` \
  && rm -rf "/app/data/prosody-modules"
 
 mkdir -p /app/data/data
 mkdir -p /app/data/certs
 
-cp /etc/certs/tls_cert.pem /app/data/certs/fullchain.pem
-cp /etc/certs/tls_key.pem /app/data/certs/privkey.pem
+# Copy all certs! Do this until we can get the TLD from an addon
+# The prosody-start script will rearrange as necessary because it has the variables
+# cp /home/yellowtent/platformdata/nginx/cert/* /app/data/certs/
+cp /media/Extra\ Storage/app_xmpp/* /app/data/certs/
 
 # Change ownership
 chown -R prosody:prosody /app/data

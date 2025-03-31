@@ -44,11 +44,14 @@ modules_enabled = {
     --"legacyauth"; -- Legacy authentication. Only used by some old clients and bots.
     "lastactivity";
     "server_contact_info"; -- This module lets you advertise various contact addresses for your XMPP service via XEP-0157.
-
     -- Cloudron Modules
     "http"; -- Should be loaded automatically, but let's load it explicitly
     "host_status_check";
     "http_host_status_check";
+    "turn_external"; -- Enables external TURN/STUN server
+    "admin_shell"; -- For debugging issues
+    "smacks"; -- For XEP-0198: Stream Management
+    "cloud_notify"; -- For XEP-0357: Push Notifications
 };
 
 -- These modules are auto-loaded, but should you want
