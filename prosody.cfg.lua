@@ -8,19 +8,11 @@ admins = stringy.split(prosody_admins, ", ");
 
 pidfile = "/app/data/prosody.pid"
 
--- Set data directory to path provided by Cloudron storage addon
--- not needed, compiling with this set
--- data_path = "/app/data/data"
+allow_registration = os.getenv("ALLOW_REGISTRATION") or "false";
 
-allow_registration = os.getenv("ALLOW_REGISTRATION");
-
--- Make sure we're listening on external interfaces
-http_interfaces = { "0.0.0.0", "::1" }
-https_interfaces = { "0.0.0.0", "::1" }
-
-c2s_require_encryption = os.getenv("C2S_REQUIRE_ENCRYPTION");
-s2s_require_encryption = os.getenv("S2S_REQUIRE_ENCRYPTION");
-s2s_secure_auth = os.getenv("S2S_SECURE_AUTH");
+c2s_require_encryption = os.getenv("C2S_REQUIRE_ENCRYPTION") or "true";
+s2s_require_encryption = os.getenv("S2S_REQUIRE_ENCRYPTION") or "true";
+s2s_secure_auth = os.getenv("S2S_SECURE_AUTH") or "true";
 
 authentication = os.getenv("AUTHENTICATION") or "internal_hashed";
 
@@ -40,5 +32,10 @@ turn_external_secret = os.getenv("TURN_SECRET")
 log = {
     {levels = {min = os.getenv("LOG_LEVEL") or "info"}, to = "console"};
 };
+
+-- Cloudron Changes
+---- Make sure we're listening on external interfaces
+http_interfaces = { "0.0.0.0", "::1" }
+https_interfaces = { "0.0.0.0", "::1" }
 
 Include "conf.d/*.cfg.lua";

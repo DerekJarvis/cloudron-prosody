@@ -2,5 +2,3 @@ data/*
 tests/certs/
 tests/venv/
 tests/__pycache__/
-testcert/tls_cert.pem
-testcert/tls_key.pem

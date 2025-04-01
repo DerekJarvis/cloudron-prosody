@@ -6,7 +6,11 @@ ARG VERSION
 
 ARG LUAROCKS_VERSION=3.11.1
 ARG PROSODY_VERSION=0.12.5
+ARG LUAROCKS_VERSION=3.11.1
+ARG PROSODY_VERSION=0.12.5
 
+ARG LUAROCKS_SHA256="c3fb3d960dffb2b2fe9de7e3cb004dc4d0b34bb3d342578af84f84325c669102"
+ARG PROSODY_DOWNLOAD_SHA256="778fb7707a0f10399595ba7ab9c66dd2a2288c0ae3a7fe4ab78f97d462bd399f"
 ARG LUAROCKS_SHA256="c3fb3d960dffb2b2fe9de7e3cb004dc4d0b34bb3d342578af84f84325c669102"
 ARG PROSODY_DOWNLOAD_SHA256="778fb7707a0f10399595ba7ab9c66dd2a2288c0ae3a7fe4ab78f97d462bd399f"
 
@@ -79,8 +83,20 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
 
 EXPOSE 5000 5222 5223 5269 5347 5280 5281
 
+# Not needed - Cloudron makes its own user which we will map to Prosody later
+#RUN groupadd -r prosody \
+# && useradd -r -g prosody prosody \
+# && chown prosody:prosody /usr/local/var/lib/prosody
+
+# Not Needed - Cloudron creates the /app/data directory automatically
+#RUN mkdir -p /var/run/prosody/ \
+# && chown prosody:prosody /var/run/prosody/
+
 # https://github.com/prosody/prosody-docker/issues/25
 ENV __FLUSH_LOG=yes
+
+# Not Needed - Cloudron automatically creates the /app/data directory
+#VOLUME ["/usr/local/var/lib/prosody"]
 
 COPY docker-entrypoint.bash /entrypoint.bash
 
