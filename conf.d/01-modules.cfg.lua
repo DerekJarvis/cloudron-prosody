@@ -1,4 +1,4 @@
-plugin_paths = { "/app/data/custom-modules/" };
+plugin_paths = { "/usr/local/lib/prosody/custom-modules/" };
 
 modules_enabled = {
     -- Generally required

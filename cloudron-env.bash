@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo $USER
+
 # Cloudron defaults & Env Mappings
 export ALLOW_REGISTRATION="false"
 export DOMAIN=${CLOUDRON_WEBADMIN_ORIGIN#https://my.}
@@ -10,8 +12,8 @@ export LDAP_BASE=${CLOUDRON_LDAP_USERS_BASE_DN}
 export LDAP_SERVER=${CLOUDRON_LDAP_SERVER}:${CLOUDRON_LDAP_PORT}
 export LDAP_ROOTDN=${CLOUDRON_LDAP_BIND_DN}
 export LDAP_PASSWORD=${CLOUDRON_LDAP_BIND_PASSWORD}
-export LDAP_FILTER='(&(objectclass=user)(|(username=$user)(mail=$user)))' # Recommended filter
-export LDAP_ADMIN_FILTER="(&(objectclass=user)(memberof=cn=employees,ou=groups,dc=cloudron))" # How to find admins in LDAP?
+export LDAP_FILTER='(&(objectclass=user)(|(username=$user)(mail=$user)))'
+export LDAP_ADMIN_FILTER="(&(objectclass=user)(memberof=cn=employees,ou=groups,dc=cloudron))" # TODO: How to find admins in LDAP?
 export TURN_SERVER=${CLOUDRON_TURN_SERVER}
 export TURN_SECRET=${CLOUDRON_TURN_SECRET}
 
@@ -37,39 +39,3 @@ export SERVER_CONTACT_INFO_SALES=${SERVER_CONTACT_INFO_SALES:-"xmpp:sales@$DOMAI
 export SERVER_CONTACT_INFO_SECURITY=${SERVER_CONTACT_INFO_SECURITY:-"xmpp:security@$DOMAIN"}
 export SERVER_CONTACT_INFO_SUPPORT=${SERVER_CONTACT_INFO_SUPPORT:-"xmpp:support@$DOMAIN"}
 export PROSODY_ADMINS=${PROSODY_ADMINS:-""}
-
-# Copy Certs
-mkdir -p /app/data/certs/$DOMAIN_HTTP_UPLOAD
-cp /app/data/certs/$DOMAIN_HTTP_UPLOAD.cert /app/data/certs/$DOMAIN_HTTP_UPLOAD/fullchain.pem
-cp /app/data/certs/$DOMAIN_HTTP_UPLOAD.key /app/data/certs/$DOMAIN_HTTP_UPLOAD/privkey.pem
-
-mkdir -p /app/data/certs/$DOMAIN_MUC
-cp /app/data/certs/$DOMAIN_MUC.cert /app/data/certs/$DOMAIN_MUC/fullchain.pem
-cp /app/data/certs/$DOMAIN_MUC.key /app/data/certs/$DOMAIN_MUC/privkey.pem
-
-mkdir -p /app/data/certs/$DOMAIN_PROXY
-cp /app/data/certs/$DOMAIN_PROXY.cert /app/data/certs/$DOMAIN_PROXY/fullchain.pem
-cp /app/data/certs/$DOMAIN_PROXY.key /app/data/certs/$DOMAIN_PROXY/privkey.pem
-
-mkdir -p /app/data/certs/$DOMAIN_PUBSUB
-cp /app/data/certs/$DOMAIN_PUBSUB.cert /app/data/certs/$DOMAIN_PUBSUB/fullchain.pem
-cp /app/data/certs/$DOMAIN_PUBSUB.key /app/data/certs/$DOMAIN_PUBSUB/privkey.pem
-
-mkdir -p /app/data/certs/$DOMAIN_APP
-cp /app/data/certs/$DOMAIN_APP.cert /app/data/certs/$DOMAIN_APP/fullchain.pem
-cp /app/data/certs/$DOMAIN_APP.key /app/data/certs/$DOMAIN_APP/privkey.pem
-
-mkdir -p /app/data/certs/$DOMAIN
-cp /app/data/certs/$DOMAIN.cert /app/data/certs/$DOMAIN/fullchain.pem
-cp /app/data/certs/$DOMAIN.key /app/data/certs/$DOMAIN/privkey.pem
-
-# Now clean up all certs we copied in blindly, since that was a bad idea
-rm /app/data/certs/*.cert
-rm /app/data/certs/*.key
-
-if [ -z "$DOMAIN" ]; then
-  echo "[ERROR] DOMAIN must be set!"
-  exit 1
-fi
-
-/app/data/bin/prosody -F --config /app/data/prosody.cfg.lua

@@ -6,7 +6,10 @@ local stringy = require "stringy"
 local prosody_admins = os.getenv("PROSODY_ADMINS") or "";
 admins = stringy.split(prosody_admins, ", ");
 
-pidfile = "/app/data/prosody.pid"
+data_path = "/app/data"
+certificates = "/app/data/certs"
+run_dir = "/run/prosody"
+pidfile = "/run/prosody/prosody.pid"
 
 allow_registration = os.getenv("ALLOW_REGISTRATION") or "false";
 

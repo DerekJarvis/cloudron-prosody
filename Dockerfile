@@ -58,7 +58,7 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
  && mkdir -p /usr/src/prosody \
  && tar -xzf prosody.tar.gz -C /usr/src/prosody --strip-components=1 \
  && rm prosody.tar.gz \
- && cd /usr/src/prosody && ./configure --prefix=/app/data --datadir=/app/data/data --no-example-certs \
+ && cd /usr/src/prosody && ./configure --no-example-certs \
  && make \
  && make install \
  && cd / && rm -r /usr/src/prosody \
@@ -83,40 +83,41 @@ RUN buildDeps='gcc git libc6-dev libidn2-dev liblua5.2-dev libsqlite3-dev libssl
 
 EXPOSE 5000 5222 5223 5269 5347 5280 5281
 
-# Not needed - Cloudron makes its own user which we will map to Prosody later
-#RUN groupadd -r prosody \
-# && useradd -r -g prosody prosody \
-# && chown prosody:prosody /usr/local/var/lib/prosody
+RUN groupadd -r prosody \
+ && useradd -r -g prosody prosody \
+ && chown prosody:prosody /usr/local/var/lib/prosody
 
-# Not Needed - Cloudron creates the /app/data directory automatically
-#RUN mkdir -p /var/run/prosody/ \
-# && chown prosody:prosody /var/run/prosody/
+RUN mkdir /run/prosody/ \
+ && chown prosody:prosody /run/prosody/
 
 # https://github.com/prosody/prosody-docker/issues/25
 ENV __FLUSH_LOG=yes
 
-# Not Needed - Cloudron automatically creates the /app/data directory
-#VOLUME ["/usr/local/var/lib/prosody"]
+#VOLUME ["/usr/local/var/lib/prosody"] # Not Needed - Cloudron automatically creates the /app/data directory
 
+# symlink the certs to a place we can update:
+RUN mkdir -p /app/data/certs
+RUN rm -rf /usr/local/etc/prosody/certs
+RUN ln -sf /app/data/certs /usr/local/etc/prosody
+
+COPY prosody.cfg.lua /usr/local/etc/prosody/prosody.cfg.lua
 COPY docker-entrypoint.bash /entrypoint.bash
+COPY conf.d/*.cfg.lua /usr/local/etc/prosody/conf.d/
 
-RUN wget https://hg.prosody.im/prosody-modules/archive/tip.tar.gz
+COPY *.bash /usr/local/bin/
 
-RUN mkdir -p /usr/local/startup/scripts
-RUN mkdir -p /usr/local/startup/conf.d
-COPY *.bash /usr/local/startup/scripts/
-COPY prosody.cfg.lua /usr/local/startup/prosody.cfg.lua
-COPY conf.d/*.cfg.lua /usr/local/startup/conf.d/
-
-# Prosody automatically builds into the default directory
-# which will get overwritten by cloudron, so move it
-RUN mv /app/data/* /usr/local/startup/
-
-RUN mv tip.tar.gz /usr/local/startup/tip.tar.gz
-
-# Workaround for hard-coded prosody user and Cloudron user perms
-# Make the prosody user the same UID as Cloudron
-RUN sudo adduser --disabled-login prosody -gecos 'prosody' && passwd -d prosody
+RUN download-prosody-modules.bash \
+ && docker-prosody-module-install.bash \
+        cloud_notify `# XEP-0357: Push Notifications` \
+        e2e_policy `# require end-2-end encryption` \
+        filter_chatstates `# disable "X is typing" type messages` \
+        throttle_presence `# presence throttling in CSI` \
+        vcard_muc `# XEP-0153: vCard-Based Avatar (MUC)` \
+        host_status_check `#Cloudron: Health checker` \
+        http_host_status_check `#Cloudron: HTTP Endpoint for Health checker` \
+        turn_external `#Cloudron: STUN/TURN Connectivity` \
+        cloud_notify `#Cloudron: For XEP-0357: Push Notifications` \
+ && rm -rf "/usr/src/prosody-modules"
 
 ENTRYPOINT ["/entrypoint.bash"]
-# CMD ["prosody", "-F"]
+CMD ["prosody", "-F"]

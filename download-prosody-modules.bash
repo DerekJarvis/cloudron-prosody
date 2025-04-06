@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-dir="/app/data/prosody-modules"
+dir="/usr/src/prosody-modules"
 
 mkdir -p "${dir}"
-
-tar -xzf /usr/local/startup/tip.tar.gz -C "${dir}" --strip-components=1
+wget https://hg.prosody.im/prosody-modules/archive/tip.tar.gz
+tar -xzf tip.tar.gz -C "${dir}" --strip-components=1
+rm tip.tar.gz

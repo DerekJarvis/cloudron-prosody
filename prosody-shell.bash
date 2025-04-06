@@ -8,4 +8,4 @@ if [ -z "$DOMAIN" ]; then
   exit 1
 fi
 
-prosodyctl check
+prosodyctl shell
