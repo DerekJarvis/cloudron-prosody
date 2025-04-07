@@ -23,4 +23,4 @@ chown -R prosody:prosody /app/data
 #  exit 1
 #fi
 
-exec /usr/local/bin/gosu prosody:prosody "$@"
+exec /usr/local/bin/gosu prosody:prosody prosody -F
