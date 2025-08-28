@@ -115,5 +115,4 @@ RUN download-prosody-modules.bash \
         cloud_notify `#Cloudron: For XEP-0357: Push Notifications` \
  && rm -rf "/usr/src/prosody-modules"
 
-ENTRYPOINT ["/entrypoint.bash"]
-CMD ["prosody", "-F"]
+CMD ["/entrypoint.bash"]
